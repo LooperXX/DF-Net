@@ -15,7 +15,7 @@ In the following, we will guide you how to use this repository step by step.
 
 ## Architecture
 
-<div align=center><img src="img/framework.png"  alt="framework" style="zoom:40%;"  /></div>
+<div align=center><img src="img/framework.png"  alt="framework" width="300" height="500"  /></div>
 
 ## Results
 
