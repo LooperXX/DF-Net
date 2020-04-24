@@ -2,7 +2,7 @@
 
 This repository contains the PyTorch implementation of the paper: 
 
-**Dynamic Fusion Network for Multi-Domain End-to-end Task-Oriented Dialog**. [Libo Qin](http://ir.hit.edu.cn/~lbqin/), [Xiao Xu](https://looperxx.github.io/), [Wanxiang Che](http://ir.hit.edu.cn/~car/chinese.htm), [Yue Zhang](https://frcchang.github.io/), [Ting Liu](http://ir.hit.edu.cn/~liuting/). ***ACL 2020***. [[PDF]]()
+**Dynamic Fusion Network for Multi-Domain End-to-end Task-Oriented Dialog**. [Libo Qin](http://ir.hit.edu.cn/~lbqin/), [Xiao Xu](https://looperxx.github.io/), [Wanxiang Che](http://ir.hit.edu.cn/~car/chinese.htm), [Yue Zhang](https://frcchang.github.io/), [Ting Liu](http://ir.hit.edu.cn/~liuting/). ***ACL 2020***. [[PDF(Arxiv)]](https://arxiv.org/abs/2004.11019)
 
 If you use any source codes or the datasets included in this toolkit in your work, please cite the following paper. The bibtex are listed below:
 
