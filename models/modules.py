@@ -161,7 +161,7 @@ class MLPSelfAttention(nn.Module):
         inp = self.dropout(inp)
         scores_ = self.scorer(inp.contiguous().view(batch_size, seq_len, -1))
         scores_ = scores_.masked_fill((mask == 0).unsqueeze(-1), -1e9)
-        scores = F.softmax(scores_, dim=1)
+        scores = F.softmax(scores_, dim=-1)
         context = scores.unsqueeze(-2).expand_as(inp).mul(inp).sum(-1)
         return context, scores_
 

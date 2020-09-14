@@ -34,15 +34,18 @@ In the following, we will guide you how to use this repository step by step.
 
 ## Results
 
-![contrast](img/result.png)
+![result](img/result.png)
 
 ## Preparation
 
-Our code is based on PyTorch 1.2. Required python packages:
+Our code is based on PyTorch 1.2 Required python packages:
 
--   numpy==1.18.1
--   tqdm==4.32.1
--   torch==1.2.0
+-   numpy==1.14.2
+-   tqdm==4.44.1
+-   pytorch==1.2.0
+-   python==3.6.3
+-   cudatoolkit==9.2
+-   cudnn==7.6.5
 
 We highly suggest you using [Anaconda](https://www.anaconda.com/) to manage your python environment.
 
@@ -52,16 +55,16 @@ The script **myTrain.py** acts as a main function to the project, you can run th
 
 ```Shell
 # SMD dataset
-python myTrain.py -gpu=True -ds=kvr -dr=0.2 -bsz=16 -an=SMD -op=SMD.log
+python myTrain.py -gpu=True -ds=kvr -dr=0.15 -bsz=32 -an=SMD -op=SMD.log
 # MultiWOZ 2.1 dataset
-python myTrain.py -gpu=True -ds=woz -dr=0.1 -bsz=32 -an=WOZ -op=WOZ.log
+python myTrain.py -gpu=True -ds=woz -dr=0.15 -bsz=16 -an=WOZ -op=WOZ.log
 ```
 
 We also provide our reported model parameters in the `save/best` directory, you can run the following command to evaluate them and so on.
 
 ```SHELL
-python myTrain.py -gpu=True -e=0 -ds=kvr -bsz=16 -path=save/best/SMD -op=SMD.log
-python myTrain.py -gpu=True -e=0 -ds=woz -bsz=32 -path=save/best/MultiWOZ -op=WOZ.log
+python myTrain.py -gpu=True -e=0 -ds=kvr -bsz=32 -path=save/best/SMD -op=SMD.log
+python myTrain.py -gpu=True -e=0 -ds=woz -bsz=16 -path=save/best/MultiWOZ -op=WOZ.log
 ```
 
 Due to some stochastic factors(e.g., GPU and environment), it maybe need to slightly tune the hyper-parameters using grid search to reproduce the results reported in our paper. All the hyper-parameters are in the `utils/config.py` and here are the suggested hyper-parameter settings:
