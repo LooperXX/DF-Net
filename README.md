@@ -36,6 +36,14 @@ In the following, we will guide you how to use this repository step by step.
 
 ![result](img/result.png)
 
+> We rerun the experiments based on the following environment and the suggested hyper-parameter settings. The new results are better than the published version.
+
+|Datasets|BLEU|F1|Navigate F1|Weather F1|Calendar F1|
+|:----|:----|:----|:----|:----|:----|
+|SMD|15.2|63.1|57.6|57.3|74.6|
+|MultiWOZ|9.74|35.7|42.2|32.8|30.7|
+
+
 ## Preparation
 
 Our code is based on PyTorch 1.2 Required python packages:
