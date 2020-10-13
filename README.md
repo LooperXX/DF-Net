@@ -41,6 +41,9 @@ In the following, we will guide you how to use this repository step by step.
 |Datasets|BLEU|F1|Navigate F1|Weather F1|Calendar F1|
 |:----|:----|:----|:----|:----|:----|
 |SMD|15.2|63.1|57.6|57.3|74.6|
+
+|Datasets|BLEU|F1|Restaurant F1|Attraction F1|Hotel F1|
+|:----|:----|:----|:----|:----|:----|
 |MultiWOZ|9.74|35.7|42.2|32.8|30.7|
 
 
