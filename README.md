@@ -36,15 +36,11 @@ In the following, we will guide you how to use this repository step by step.
 
 ![result](img/result.png)
 
-> We rerun the experiments based on the following environment and the suggested hyper-parameter settings. The new results are better than the published version.
+> We clean our code, rerun the experiments based on the following environment and the suggested hyper-parameter settings.
 
-|Datasets|BLEU|F1|Navigate F1|Weather F1|Calendar F1|
-|:----|:----|:----|:----|:----|:----|
-|SMD|15.2|63.1|57.6|57.3|74.6|
-
-|Datasets|BLEU|F1|Restaurant F1|Attraction F1|Hotel F1|
-|:----|:----|:----|:----|:----|:----|
-|MultiWOZ|9.74|35.7|42.2|32.8|30.7|
+|Datasets|BLEU|F1|Navigate F1|Weather F1|Calendar F1|Datasets|BLEU|F1|Restaurant F1|Attraction F1|Hotel F1|
+|:----:|:----:|:----:|:----:|:----:|:----:|:----:|:----:|:----:|:----:|:----:|:----:|
+|SMD|14.0|62.2|55.7|58.3|73.0|MultiWOZ|9.29|34.2|40.1|34.2|28.8|
 
 
 ## Preparation
@@ -66,22 +62,24 @@ The script **myTrain.py** acts as a main function to the project, you can run th
 
 ```Shell
 # SMD dataset
-python myTrain.py -gpu=True -ds=kvr -dr=0.15 -bsz=32 -an=SMD -op=SMD.log
+python myTrain.py -gpu=True -ds=kvr -dr=0.15 -bsz=16 -tfr=0.7 -an=SMD -op=SMD.log
 # MultiWOZ 2.1 dataset
-python myTrain.py -gpu=True -ds=woz -dr=0.15 -bsz=16 -an=WOZ -op=WOZ.log
+python myTrain.py -gpu=True -ds=woz -dr=0.1 -bsz=8 -tfr=0.8 -an=WOZ -op=WOZ.log
 ```
 
 We also provide our reported model parameters in the `save/best` directory, you can run the following command to evaluate them and so on.
 
 ```SHELL
-python myTrain.py -gpu=True -e=0 -ds=kvr -bsz=32 -path=save/best/SMD -op=SMD.log
-python myTrain.py -gpu=True -e=0 -ds=woz -bsz=16 -path=save/best/MultiWOZ -op=WOZ.log
+python myTrain.py -gpu=True -e=0 -ds=kvr -bsz=16 -path=save/best/SMD -op=SMD.log
+python myTrain.py -gpu=True -e=0 -ds=woz -bsz=8 -path=save/best/MultiWOZ -op=WOZ.log
 ```
 
-Due to some stochastic factors(e.g., GPU and environment), it maybe need to slightly tune the hyper-parameters using grid search to reproduce the results reported in our paper. All the hyper-parameters are in the `utils/config.py` and here are the suggested hyper-parameter settings:
+Due to some stochastic factors(e.g., GPU and environment), it maybe need to slightly tune the hyper-parameters using grid search to reproduce the results reported in our paper. 
+
+All the hyper-parameters are in the `utils/config.py` and here are the suggested hyper-parameter settings for grid search:
 
 -   Dropout ratio [0.1, 0.15, 0.2, 0.25, 0.3]
--   Batch size [16, 32]
+-   Batch size [8, 16, 32]
 -   Teacher forcing ratio [0.7, 0.8, 0.9, 1.0]
 
 If you have any question, please issue the project or [email](mailto:xxu@ir.hit.edu.cn) me and we will reply you soon.

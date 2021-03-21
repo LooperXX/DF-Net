@@ -53,7 +53,7 @@ class DFNet(nn.Module):
         self.scheduler = lr_scheduler.ReduceLROnPlateau(self.decoder_optimizer, mode='max', factor=0.5, patience=1,
                                                         min_lr=0.0001, verbose=True)
         self.criterion_bce = nn.BCELoss()
-        self.criterion_label = nn.CrossEntropyLoss()
+        self.criterion_label = nn.BCELoss()
         self.reset()
 
         if USE_CUDA:
@@ -122,8 +122,9 @@ class DFNet(nn.Module):
             data['response_lengths'])
         loss = loss_g + loss_v + loss_l
 
-        loss += self.criterion_label(label_e, data['label_arr'].squeeze(-1))
-        loss += self.criterion_label(label_d, data['label_arr'].squeeze(-1))
+        golden_labels = torch.zeros_like(label_e).scatter_(1, data['label_arr'], 1)
+        loss += self.criterion_label(label_e, golden_labels)
+        loss += self.criterion_label(label_d, golden_labels)
 
         domains = self._cuda(torch.Tensor(domains)).long().unsqueeze(-1)
         loss += masked_cross_entropy(label_mix_e, domains.expand(len(domains), label_mix_e.size(1)).contiguous(),
@@ -456,8 +457,6 @@ class DFNet(nn.Module):
                     print("F1-macro-attraction SCORE:\t{}".format(F1_attraction_pred / float(F1_attraction_count)),
                           file=f)
                     print("F1-macro-hotel SCORE:\t{}".format(F1_hotel_pred / float(F1_hotel_count)), file=f)
-
-                    print("F1-micro SCORE:\t{}".format(F1_score), file=f)
                     print("F1-micro-restaurant SCORE:\t{}".format(
                         self.compute_F1(P_restaurant_score, R_restaurant_score)),
                         file=f)
