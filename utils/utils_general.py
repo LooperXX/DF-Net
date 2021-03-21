@@ -195,13 +195,7 @@ class Dataset(data.Dataset):
         conv_char_arr = _cuda(conv_char_arr.contiguous())
         conv_char_length = _cuda(conv_char_length.contiguous())
         char_seq_recover = _cuda(char_seq_recover.contiguous())
-
         if (len(list(kb_arr.size())) > 1): kb_arr = _cuda(kb_arr.transpose(0, 1).contiguous())
-
-        item_info['conv_char_arr'] = 0
-        item_info['conv_char_length'] = 0
-        item_info['char_seq_recover'] = 0
-        item_info['label_arr'] = 0
 
         # processed information
         data_info = {}
