@@ -167,7 +167,7 @@ class MLPSelfAttention(nn.Module):
 
 
 class ContextEncoder(nn.Module):
-    def __init__(self, input_size, hidden_size, dropout, vocab_size, domains, n_layers=args['layer_r']):
+    def __init__(self, input_size, hidden_size, dropout, domains, n_layers=args['layer_r']):
         super(ContextEncoder, self).__init__()
         self.input_size = input_size
         self.hidden_size = hidden_size
@@ -200,8 +200,7 @@ class ContextEncoder(nn.Module):
         """Get cell states and hidden states."""
         return _cuda(torch.zeros(2, bsz, self.hidden_size))
 
-    def forward(self, input_seqs, input_lengths, conv_char_arr, conv_char_length, char_seq_recover, domain_arr,
-                hidden=None):
+    def forward(self, input_seqs, input_lengths):
         embedded = self.embedding(input_seqs.contiguous().view(input_seqs.size(0), -1).long())
         embedded = embedded.view(input_seqs.size() + (embedded.size(-1),))
         embedded = torch.sum(embedded, 2).squeeze(2)
@@ -351,10 +350,10 @@ class LocalMemoryDecoder(nn.Module):
                                                CNNClassifier(hidden_dim, hidden_dim, [2, 3], len(domains), dropout))
 
     def get_p_vocab(self, hidden, H):
-        cond = self.attn_table(torch.cat((H, hidden.squeeze(0).unsqueeze(1).expand_as(H)), dim=-1))
+        cond = self.attn_table(torch.cat((H, hidden.unsqueeze(1).expand_as(H)), dim=-1))
         cond = F.softmax(cond.squeeze(-1), dim=-1)
         hidden_ = cond.unsqueeze(-1).expand_as(H).mul(H).sum(-2)
-        context = F.tanh(self.projector2(torch.cat((hidden.squeeze(0), hidden_), dim=-1).unsqueeze(0)))
+        context = F.tanh(self.projector2(torch.cat((hidden, hidden_), dim=-1).unsqueeze(0)))
         p_vocab = self.attend_vocab(self.C.weight, context.squeeze(0))
         return p_vocab, context
 
@@ -382,8 +381,7 @@ class LocalMemoryDecoder(nn.Module):
             if t != 0:
                 decoder_input = self.C(decoder_input)
             embed_q = self.dropout_layer(decoder_input)
-            if len(embed_q.size()) == 2: embed_q = embed_q.unsqueeze(0)
-
+            embed_q = embed_q.view(1, -1, self.embedding_dim)
             _, hidden = self.sketch_rnn_global(embed_q, hidden)
             hidden_locals_ = []
             for domain in self.domains.values():

@@ -24,11 +24,6 @@ class Lang:
         self.n_words = len(self.index2word)  # Count default tokens
         self.word2index = dict([(v, k) for k, v in self.index2word.items()])
 
-        self.char2index = {}
-        self.index2char = {PAD_token: "PAD", UNK_token: 'UNK'}
-        self.n_chars = len(self.index2char)
-        self.char2index = dict([(v, k) for k, v in self.index2char.items()])
-
     def index_words(self, story, trg=False):
         if trg:
             for word in story.split(' '):
@@ -43,12 +38,6 @@ class Lang:
             self.word2index[word] = self.n_words
             self.index2word[self.n_words] = word
             self.n_words += 1
-        for char in word:
-            if char not in self.char2index:
-                self.char2index[char] = self.n_chars
-                self.index2char[self.n_chars] = char
-                self.n_chars += 1
-
 
 class Dataset(data.Dataset):
     """Custom data.Dataset compatible with data.DataLoader."""
@@ -73,7 +62,6 @@ class Dataset(data.Dataset):
         ptr_index = torch.Tensor(self.data_info['ptr_index'][index])
         selector_index = torch.Tensor(self.data_info['selector_index'][index])
         conv_arr = self.data_info['conv_arr'][index]
-        conv_char_arr, conv_char_length = self.preprocess(conv_arr, self.src_word2id, trg=False, char=True)
         conv_arr = self.preprocess(conv_arr, self.src_word2id, trg=False)
         kb_arr = self.data_info['kb_arr'][index]
         kb_arr = self.preprocess(kb_arr, self.src_word2id, trg=False)
@@ -88,9 +76,6 @@ class Dataset(data.Dataset):
             except:
                 data_info[k] = self.data_info[k][index]
 
-        data_info['conv_char_arr'] = conv_char_arr
-        data_info['conv_char_length'] = conv_char_length
-
         # additional plain information
         data_info['context_arr_plain'] = self.data_info['context_arr'][index]
         data_info['response_plain'] = self.data_info['response'][index]
@@ -102,18 +87,10 @@ class Dataset(data.Dataset):
     def __len__(self):
         return self.num_total_seqs
 
-    def preprocess(self, sequence, word2id, trg=True, char=False):
+    def preprocess(self, sequence, word2id, trg=True):
         """Converts words to ids."""
         if trg:
             story = [word2id[word] if word in word2id else UNK_token for word in sequence.split(' ')] + [EOS_token]
-        elif char:
-            length = torch.Tensor([len(word[0]) for word in sequence])
-            char_arr = []
-            for word in sequence:
-                for char in word[0]:
-                    temp = self.lang.char2index[char] if char in self.lang.char2index else UNK_token
-                    char_arr.append(temp)
-            return torch.Tensor(char_arr), length
         else:
             story = []
             for i, word_triple in enumerate(sequence):
@@ -149,23 +126,6 @@ class Dataset(data.Dataset):
                 padded_seqs[i, :end] = seq[:end]
             return padded_seqs, lengths
 
-        def merge_char(chars, length, max_seq_len):
-            max_word_len = max([max(leng.long())] for leng in length)[0].item()
-            seqs_char = torch.ones((len(length), max_seq_len, max_word_len))
-            seqs_char_lenghth = torch.ones((len(length), max_seq_len))
-            for i, leng in enumerate(length):
-                seqs_char_lenghth[i, :len(leng)] = leng
-                start = 0
-                for ii, word_len in enumerate(leng.long()):
-                    seqs_char[i][ii][:word_len] = chars[i][start:start + word_len]
-                    start += word_len
-            seqs_char = seqs_char.view(-1, max_word_len)
-            seqs_char_lenghth = seqs_char_lenghth.view(seqs_char.size(0), )
-            seqs_char_lenghth, char_perm_idx = seqs_char_lenghth.sort(0, descending=True)
-            seqs_char = seqs_char[char_perm_idx]
-            _, char_seq_recover = char_perm_idx.sort(0, descending=False)
-            return seqs_char, seqs_char_lenghth, char_seq_recover
-
         # sort a list by sequence length (descending order) to use pack_padded_sequence
         data.sort(key=lambda x: len(x['conv_arr']), reverse=True)
         item_info = {}
@@ -182,8 +142,6 @@ class Dataset(data.Dataset):
         kb_arr, kb_arr_lengths = merge(item_info['kb_arr'], True)
 
         max_seq_len = conv_arr.size(1)
-        conv_char_arr, conv_char_length, char_seq_recover = merge_char(item_info['conv_char_arr'],
-                                                                       item_info['conv_char_length'], max_seq_len)
         label_arr = _cuda(torch.Tensor([domains[label] for label in item_info['domain']]).long().unsqueeze(-1))
         # convert to contiguous and cuda
         context_arr = _cuda(context_arr.contiguous())
@@ -192,10 +150,8 @@ class Dataset(data.Dataset):
         ptr_index = _cuda(ptr_index.contiguous())
         conv_arr = _cuda(conv_arr.transpose(0, 1).contiguous())
         sketch_response = _cuda(sketch_response.contiguous())
-        conv_char_arr = _cuda(conv_char_arr.contiguous())
-        conv_char_length = _cuda(conv_char_length.contiguous())
-        char_seq_recover = _cuda(char_seq_recover.contiguous())
         if (len(list(kb_arr.size())) > 1): kb_arr = _cuda(kb_arr.transpose(0, 1).contiguous())
+        item_info['label_arr'] = []
 
         # processed information
         data_info = {}
@@ -230,7 +186,5 @@ def get_seq(pairs, lang, batch_size, type):
     data_loader = torch.utils.data.DataLoader(dataset=dataset,
                                               batch_size=batch_size,
                                               shuffle=type,
-                                              collate_fn=dataset.collate_fn,
-                                              # num_workers=8,
-                                              drop_last=True)
+                                              collate_fn=dataset.collate_fn)
     return data_loader

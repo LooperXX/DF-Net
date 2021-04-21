@@ -40,8 +40,7 @@ In the following, we will guide you how to use this repository step by step.
 
 |Datasets|BLEU|F1|Navigate F1|Weather F1|Calendar F1|Datasets|BLEU|F1|Restaurant F1|Attraction F1|Hotel F1|
 |:----:|:----:|:----:|:----:|:----:|:----:|:----:|:----:|:----:|:----:|:----:|:----:|
-|SMD|14.0|62.2|55.7|58.3|73.0|MultiWOZ|9.29|34.2|40.1|34.2|28.8|
-
+|SMD|15.2|62.5|55.7|57.3|73.8|MultiWOZ|9.5|34.8|37.5|31.2|32.8|
 
 ## Preparation
 
@@ -62,16 +61,16 @@ The script **myTrain.py** acts as a main function to the project, you can run th
 
 ```Shell
 # SMD dataset
-python myTrain.py -gpu=True -ds=kvr -dr=0.15 -bsz=16 -tfr=0.7 -an=SMD -op=SMD.log
+python myTrain.py -gpu=True -ds=kvr -dr=0.2 -bsz=32 -tfr=0.8 -an=SMD -op=SMD.log
 # MultiWOZ 2.1 dataset
-python myTrain.py -gpu=True -ds=woz -dr=0.1 -bsz=8 -tfr=0.8 -an=WOZ -op=WOZ.log
+python myTrain.py -gpu=True -ds=woz -dr=0.2 -bsz=32 -tfr=0.9 -an=WOZ -op=WOZ.log
 ```
 
 We also provide our reported model parameters in the `save/best` directory, you can run the following command to evaluate them and so on.
 
 ```SHELL
-python myTrain.py -gpu=True -e=0 -ds=kvr -bsz=16 -path=save/best/SMD -op=SMD.log
-python myTrain.py -gpu=True -e=0 -ds=woz -bsz=8 -path=save/best/MultiWOZ -op=WOZ.log
+python myTrain.py -gpu=True -e=0 -ds=kvr -bsz=32 -path=save/best/SMD -op=SMD.log
+python myTrain.py -gpu=True -e=0 -ds=woz -bsz=32 -path=save/best/MultiWOZ -op=WOZ.log
 ```
 
 Due to some stochastic factors(e.g., GPU and environment), it maybe need to slightly tune the hyper-parameters using grid search to reproduce the results reported in our paper. 

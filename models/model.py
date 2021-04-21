@@ -41,7 +41,7 @@ class DFNet(nn.Module):
                 self.extKnow = torch.load(str(path) + '/enc_kb.th', lambda storage, loc: storage)
                 self.decoder = torch.load(str(path) + '/dec.th', lambda storage, loc: storage)
         else:
-            self.encoder = ContextEncoder(lang.n_words, hidden_size, dropout, lang.n_chars, domains)
+            self.encoder = ContextEncoder(lang.n_words, hidden_size, dropout, domains)
             self.extKnow = ExternalKnowledge(lang.n_words, hidden_size, n_layers, dropout)
             self.decoder = LocalMemoryDecoder(self.encoder.embedding, lang, hidden_size, self.decoder_hop,
                                               dropout, domains=domains)
@@ -167,11 +167,7 @@ class DFNet(nn.Module):
             story, conv_story = data['context_arr'], data['conv_arr']
 
         # Encode dialog history and KB to vectors
-        dh_outputs, dh_hidden, label_e, label_mix_e = self.encoder(conv_story, data['conv_arr_lengths'],
-                                                                   data['conv_char_arr'],
-                                                                   data['conv_char_length'],
-                                                                   data['char_seq_recover'],
-                                                                   data['domain'])
+        dh_outputs, dh_hidden, label_e, label_mix_e = self.encoder(conv_story, data['conv_arr_lengths'])
         global_pointer, kb_readout = self.extKnow.load_memory(story, data['kb_arr_lengths'], data['conv_arr_lengths'],
                                                               dh_hidden, dh_outputs, data['domain'])
         encoded_hidden = torch.cat((dh_hidden, kb_readout), dim=1)
@@ -234,6 +230,9 @@ class DFNet(nn.Module):
             entity_path = 'data/KVR/kvret_entities.json'
         elif args['dataset'] == 'woz':
             entity_path = 'data/MULTIWOZ2.1/global_entities.json'
+        else:
+            print('dataset args error')
+            exit(1)
 
         with open(entity_path) as f:
             global_entity = json.load(f)

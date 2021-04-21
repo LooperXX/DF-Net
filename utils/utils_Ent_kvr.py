@@ -176,6 +176,5 @@ def prepare_data_seq(batch_size=100):
 
 def get_data_seq(file_name, lang, max_len, batch_size=1):
     pair, _ = read_langs(file_name, max_line=None)
-    # print(pair)
     d = get_seq(pair, lang, batch_size, False)
     return d
