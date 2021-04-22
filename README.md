@@ -1,5 +1,7 @@
 # Dynamic Fusion Network for Multi-Domain End-to-end Task-Oriented Dialog
 
+[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/dynamic-fusion-network-for-multi-domain-end/task-oriented-dialogue-systems-on-kvret)](https://paperswithcode.com/sota/task-oriented-dialogue-systems-on-kvret?p=dynamic-fusion-network-for-multi-domain-end)
+
 This repository contains the PyTorch implementation of the paper: 
 
 **Dynamic Fusion Network for Multi-Domain End-to-end Task-Oriented Dialog**. [Libo Qin](http://ir.hit.edu.cn/~lbqin/), [Xiao Xu](https://looperxx.github.io/), [Wanxiang Che](http://ir.hit.edu.cn/~car/chinese.htm), [Yue Zhang](https://frcchang.github.io/), [Ting Liu](http://ir.hit.edu.cn/~liuting/). ***ACL 2020***. [[PDF]](https://www.aclweb.org/anthology/2020.acl-main.565/)
